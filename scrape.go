@@ -31,6 +31,7 @@ func scrapeProfile(document *goquery.Document) {
 	username := vcard.Find(".vcard-username").Text()
 	name := vcard.Find(".vcard-fullname").Text()
 
+	fmt.Println("Parsed user profile:" + username)
 	user := user{name: name, email: email, url: url, username: username}
 	dumpToCSV(user)
 }

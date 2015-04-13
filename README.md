@@ -8,14 +8,17 @@ Instructions go here.
 
 ## Usage
 
-Go into the `dist` folder and run the executable:
+You can download the executable `gophers` and run it in your terminal.
 
 ```
-// Scrape github users from an Organization.
-./gophers https://github.com/orgs/rails/people
+// Scrape an entire Github organization
+$ gophers -github_url=https://github.com/orgs/rails/people
 
-// Scrape github users from search results.
-./gophers https://github.com/search?q=rails&type=Users&utf8=%E2%9C%93
+// Scrape a single Github profile
+$ gophers -github_url=https://github.com/sergiotapia
+
+// Scrape the results of a Github search
+$ gophers -github_url=https://github.com/search?utf8=%E2%9C%93&q=ruby&type=Users&ref=searchresults
 ```
 
 ## License

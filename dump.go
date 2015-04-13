@@ -7,7 +7,7 @@ import (
 )
 
 func dumpToCSV(user user) {
-	csvfile, err := os.OpenFile("output.csv", os.O_APPEND|os.O_WRONLY, 0600)
+	csvfile, err := os.OpenFile("output.csv", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return

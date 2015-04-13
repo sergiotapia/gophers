@@ -1,25 +1,34 @@
 package main
 
 import (
-	"fmt"
+	"flag"
 	"log"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
-func ExampleScrape() {
-	doc, err := goquery.NewDocument("http://metalsucks.net")
+type user struct {
+	name     string
+	email    string
+	url      string
+	username string
+}
+
+func main() {
+	url := flag.String("github_url", "", "github url you want to scrape")
+	flag.Parse()
+	githubURL := *url
+	doc, err := goquery.NewDocument(githubURL)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	doc.Find(".reviews-wrap article .review-rhs").Each(func(i int, s *goquery.Selection) {
-		band := s.Find("h3").Text()
-		title := s.Find("i").Text()
-		fmt.Printf("Review %d: %s - %s\n", i, band, title)
-	})
-}
-
-func main() {
-	ExampleScrape()
+	if strings.Contains(githubURL, "/orgs/") {
+		// scrapeOrganization(doc)
+	} else if strings.Contains(githubURL, "/search?") {
+		// scrapeSearch(doc)
+	} else {
+		scrapeProfile(doc)
+	}
 }

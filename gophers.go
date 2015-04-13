@@ -27,7 +27,7 @@ func main() {
 	if strings.Contains(githubURL, "/orgs/") {
 		scrapeOrganization(doc, githubURL)
 	} else if strings.Contains(githubURL, "/search?") {
-		// scrapeSearch(doc)
+		scrapeSearch(doc, githubURL)
 	} else if strings.Contains(githubURL, "/stargazers") {
 		scrapeStarGazers(doc, githubURL)
 	} else {

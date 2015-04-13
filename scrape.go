@@ -5,23 +5,38 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
-func scrapeUserFromSearch(element *goquery.Selection) (user, error) {
-	email := element.Find("a.email").Text()
-	url, _ := element.Find("a").Attr("href")
-	username := element.Find("em").Text()
-	name := ""
+func scrapeSearch(document *goquery.Document, url string) {
+	pagesStr := document.Find("a.next_page").Prev().Text()
+	pages, _ := strconv.Atoi(pagesStr)
+	page := 1
+	for page <= pages {
+		pageURL := url + "&p=" + strconv.Itoa(page)
+		doc, err := goquery.NewDocument(pageURL)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	// info := element.Find(".user-list-info")
-	// info = info.Remove(".fooa")
-	// info = info.Remove("a")
-	// name := info.Text()
+		fmt.Println("Scraping page: " + strconv.Itoa(page))
+		doc.Find(".user-list-item").Each(func(i int, s *goquery.Selection) {
+			email := s.Find("a.email").Text()
+			profileURL, _ := s.Find("a").Eq(1).Attr("href")
+			username := profileURL[1:len(profileURL)]
+			profileURL = "http://github.com" + profileURL
+			name := "Fix Me"
 
-	user := user{name: name, email: email, url: url, username: username}
-	return user, nil
+			fmt.Println("Parsed user profile: " + username)
+			user := user{name: name, email: email, url: profileURL, username: username}
+			dumpToCSV(user)
+		})
+
+		page = page + 1
+		time.Sleep(15 * time.Second)
+	}
 }
 
 func scrapeProfile(document *goquery.Document) {

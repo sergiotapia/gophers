@@ -26,13 +26,16 @@ func main() {
 	}
 
 	if strings.Contains(githubURL, "/orgs/") {
+		fmt.Println("Organization URL. Beginning to scrape.")
 		scrapeOrganization(doc, githubURL)
 	} else if strings.Contains(githubURL, "/search?") {
+		fmt.Println("Search URL. Beginning to scrape.")
 		scrapeSearch(doc, githubURL)
 	} else if strings.Contains(githubURL, "/stargazers") {
 		fmt.Println("Stargazer URL. Beginning to scrape.")
 		scrapeStarGazers(doc, githubURL)
 	} else {
+		fmt.Println("Single profile URL. Beginning to scrape.")
 		scrapeProfile(doc)
 	}
 }

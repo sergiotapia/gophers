@@ -4,7 +4,8 @@ organization or search results collection.
 
 ## Installation
 
-Instructions go here.
+Installation instructions to come. Most likely you just download the executable
+for your platform and invoke it in the terminal. Coming soon!
 
 ## Usage
 
@@ -14,10 +15,10 @@ You can download the executable `gophers` and run it in your terminal.
 // Scrape an entire Github organization
 $ gophers -github_url='https://github.com/orgs/rails/people'
 
-// Scrape an antire Github repo's stargazers
+// Scrape the Stargazers for a repository
 $ gophers -github_url='https://github.com/thoughtbot/paperclip/stargazers'
 
-// Scrape a single Github profile
+// Scrape a single user profile
 $ gophers -github_url='https://github.com/sergiotapia'
 
 // Scrape the results of a Github search

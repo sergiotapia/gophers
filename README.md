@@ -12,13 +12,16 @@ You can download the executable `gophers` and run it in your terminal.
 
 ```
 // Scrape an entire Github organization
-$ gophers -github_url=https://github.com/orgs/rails/people
+$ gophers -github_url='https://github.com/orgs/rails/people'
+
+// Scrape an antire Github repo's stargazers
+$ gophers -github_url='https://github.com/thoughtbot/paperclip/stargazers'
 
 // Scrape a single Github profile
-$ gophers -github_url=https://github.com/sergiotapia
+$ gophers -github_url='https://github.com/sergiotapia'
 
 // Scrape the results of a Github search
-$ gophers -github_url=https://github.com/search?utf8=%E2%9C%93&q=ruby&type=Users&ref=searchresults
+$ gophers -github_url='https://github.com/search?utf8=%E2%9C%93&q=location%3A%22San+Fransisco%22+location%3ACA+followers%3A%3E100&type=Users&ref=advsearch&l='
 ```
 
 ## License

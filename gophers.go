@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"strings"
 
@@ -29,6 +30,7 @@ func main() {
 	} else if strings.Contains(githubURL, "/search?") {
 		scrapeSearch(doc, githubURL)
 	} else if strings.Contains(githubURL, "/stargazers") {
+		fmt.Println("Stargazer URL. Beginning to scrape.")
 		scrapeStarGazers(doc, githubURL)
 	} else {
 		scrapeProfile(doc)

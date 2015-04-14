@@ -1,117 +1,117 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"strconv"
-	"strings"
-	"time"
+  "fmt"
+  "log"
+  "strconv"
+  "strings"
+  "time"
 
-	"github.com/PuerkitoBio/goquery"
+  "github.com/PuerkitoBio/goquery"
 )
 
 func scrapeSearch(document *goquery.Document, url string) {
-	pagesStr := document.Find("a.next_page").Prev().Text()
-	pages, _ := strconv.Atoi(pagesStr)
-	page := 1
-	for page <= pages {
-		pageURL := url + "&p=" + strconv.Itoa(page)
-		doc, err := goquery.NewDocument(pageURL)
-		if err != nil {
-			log.Fatal(err)
-		}
+  pagesStr := document.Find("a.next_page").Prev().Text()
+  pages, _ := strconv.Atoi(pagesStr)
+  page := 1
+  for page <= pages {
+    pageURL := url + "&p=" + strconv.Itoa(page)
+    doc, err := goquery.NewDocument(pageURL)
+    if err != nil {
+      log.Fatal(err)
+    }
+    fmt.Println("Downloaded: " + pageURL)
+    fmt.Println("Scraping page: " + strconv.Itoa(page))
+    doc.Find(".user-list-item").Each(func(i int, s *goquery.Selection) {
+      email := s.Find("a.email").Text()
+      profileURL, _ := s.Find("a").Eq(1).Attr("href")
+      username := profileURL[1:len(profileURL)]
+      profileURL = "http://github.com" + profileURL
+      name := "Fix Me"
 
-		fmt.Println("Scraping page: " + strconv.Itoa(page))
-		doc.Find(".user-list-item").Each(func(i int, s *goquery.Selection) {
-			email := s.Find("a.email").Text()
-			profileURL, _ := s.Find("a").Eq(1).Attr("href")
-			username := profileURL[1:len(profileURL)]
-			profileURL = "http://github.com" + profileURL
-			name := "Fix Me"
+      fmt.Println("Parsed user profile: " + username)
+      user := user{name: name, email: email, url: profileURL, username: username}
+      dumpToCSV(user)
+    })
 
-			fmt.Println("Parsed user profile: " + username)
-			user := user{name: name, email: email, url: profileURL, username: username}
-			dumpToCSV(user)
-		})
-
-		page = page + 1
-		time.Sleep(15 * time.Second)
-	}
+    page = page + 1
+    time.Sleep(7 * time.Second)
+  }
 }
 
 func scrapeProfile(document *goquery.Document) {
-	vcard := document.Find(".vcard")
+  vcard := document.Find(".vcard")
 
-	email := vcard.Find("a.email").Text()
-	url := "http://github.com/" + vcard.Find(".vcard-username").Text()
-	username := vcard.Find(".vcard-username").Text()
-	name := vcard.Find(".vcard-fullname").Text()
+  email := vcard.Find("a.email").Text()
+  url := "http://github.com/" + vcard.Find(".vcard-username").Text()
+  username := vcard.Find(".vcard-username").Text()
+  name := vcard.Find(".vcard-fullname").Text()
 
-	fmt.Println("Parsed user profile: " + username)
-	user := user{name: name, email: email, url: url, username: username}
-	dumpToCSV(user)
+  fmt.Println("Parsed user profile: " + username)
+  user := user{name: name, email: email, url: url, username: username}
+  dumpToCSV(user)
 }
 
 func scrapeOrganization(document *goquery.Document, url string) {
-	pagesStr := document.Find("a.next_page").Prev().Text()
-	pages, _ := strconv.Atoi(pagesStr)
-	page := 1
-	for page <= pages {
-		doc, err := goquery.NewDocument(url + "?page=" + strconv.Itoa(page))
-		if err != nil {
-			log.Fatal(err)
-		}
+  pagesStr := document.Find("a.next_page").Prev().Text()
+  pages, _ := strconv.Atoi(pagesStr)
+  page := 1
+  for page <= pages {
+    doc, err := goquery.NewDocument(url + "?page=" + strconv.Itoa(page))
+    if err != nil {
+      log.Fatal(err)
+    }
 
-		fmt.Println("Scraping page:" + strconv.Itoa(page))
-		doc.Find(".member-list-item").Each(func(i int, s *goquery.Selection) {
-			scrapeOrganizationItem(s)
-		})
+    fmt.Println("Scraping page:" + strconv.Itoa(page))
+    doc.Find(".member-list-item").Each(func(i int, s *goquery.Selection) {
+      scrapeOrganizationItem(s)
+    })
 
-		page = page + 1
-	}
+    page = page + 1
+  }
 }
 
 func scrapeOrganizationItem(element *goquery.Selection) {
-	url := "http://github.com/" + element.Find(".member-username").Text()
-	username := element.Find(".member-username").Text()
-	name := element.Find(".member-fullname").Text()
+  url := "http://github.com/" + element.Find(".member-username").Text()
+  username := element.Find(".member-username").Text()
+  name := element.Find(".member-fullname").Text()
 
-	doc, err := goquery.NewDocument(url)
-	if err != nil {
-		log.Fatal(err)
-	}
-	email := doc.Find(".vcard").Find("a.email").Text()
-	fmt.Println("Parsed organization user:" + username)
-	user := user{name: name, email: email, url: url, username: username}
-	dumpToCSV(user)
+  doc, err := goquery.NewDocument(url)
+  if err != nil {
+    log.Fatal(err)
+  }
+  email := doc.Find(".vcard").Find("a.email").Text()
+  fmt.Println("Parsed organization user:" + username)
+  user := user{name: name, email: email, url: url, username: username}
+  dumpToCSV(user)
 }
 
 func scrapeStarGazers(document *goquery.Document, url string) {
-	totalStarGazers := 0
-	document.Find("ul.pagehead-actions li").Each(func(i int, s *goquery.Selection) {
-		if i == 1 {
-			count := strings.TrimSpace(s.Find("a.social-count").Text())
-			totalStarGazers, _ = strconv.Atoi(count)
-		}
-	})
-	pages := totalStarGazers / 30
-	page := 1
-	for page <= pages {
-		doc, err := goquery.NewDocument(url + "?page=" + strconv.Itoa(page))
-		if err != nil {
-			log.Fatal(err)
-		}
+  totalStarGazers := 0
+  document.Find("ul.pagehead-actions li").Each(func(i int, s *goquery.Selection) {
+    if i == 1 {
+      count := strings.TrimSpace(s.Find("a.social-count").Text())
+      totalStarGazers, _ = strconv.Atoi(count)
+    }
+  })
+  pages := totalStarGazers / 30
+  page := 1
+  for page <= pages {
+    doc, err := goquery.NewDocument(url + "?page=" + strconv.Itoa(page))
+    if err != nil {
+      log.Fatal(err)
+    }
 
-		fmt.Println("Scraping page: " + strconv.Itoa(page))
-		doc.Find(".follow-list-item span.css-truncate a").Each(func(i int, s *goquery.Selection) {
-			profileURL, _ := s.Attr("href")
-			profile, err := goquery.NewDocument("http://github.com" + profileURL)
-			if err != nil {
-				log.Fatal(err)
-			}
-			scrapeProfile(profile)
-		})
+    fmt.Println("Scraping page: " + strconv.Itoa(page))
+    doc.Find(".follow-list-item span.css-truncate a").Each(func(i int, s *goquery.Selection) {
+      profileURL, _ := s.Attr("href")
+      profile, err := goquery.NewDocument("http://github.com" + profileURL)
+      if err != nil {
+        log.Fatal(err)
+      }
+      scrapeProfile(profile)
+    })
 
-		page = page + 1
-	}
+    page = page + 1
+  }
 }

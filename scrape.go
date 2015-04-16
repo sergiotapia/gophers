@@ -22,8 +22,10 @@ func scrapeSearch(document *goquery.Document, url string) {
 			profileURL, _ := s.Find("a").Eq(1).Attr("href")
 			username := profileURL[1:len(profileURL)]
 			profileURL = "http://github.com" + profileURL
-			name := "Fix Me"
-
+			info := s.Find(".user-list-info")
+			_ = info.Find("ul.user-list-meta").Remove()
+			_ = info.Find("a").Remove()
+			name := strings.TrimSpace(info.Text())
 			fmt.Println("Parsed user: " + username)
 			user := user{name: name, email: email, url: profileURL, username: username}
 			dumpToCSV(user)

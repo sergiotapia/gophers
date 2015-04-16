@@ -1,12 +1,11 @@
 package main
 
 import (
-	"flag"
+	"bufio"
 	"fmt"
 	"log"
+	"os"
 	"strings"
-
-	"github.com/PuerkitoBio/goquery"
 )
 
 type user struct {
@@ -17,25 +16,32 @@ type user struct {
 }
 
 func main() {
-	url := flag.String("github_url", "", "github url you want to scrape")
-	flag.Parse()
-	githubURL := *url
-	doc, err := goquery.NewDocument(githubURL)
+	file, err := os.Open("urls.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		url := scanner.Text()
+		processURL(url)
+	}
+}
 
-	if strings.Contains(githubURL, "/orgs/") {
-		fmt.Println("Organization URL. Beginning to scrape.")
-		scrapeOrganization(doc, githubURL)
-	} else if strings.Contains(githubURL, "/search?") {
-		fmt.Println("Search URL. Beginning to scrape.")
-		scrapeSearch(doc, githubURL)
-	} else if strings.Contains(githubURL, "/stargazers") {
-		fmt.Println("Stargazer URL. Beginning to scrape.")
-		scrapeStarGazers(doc, githubURL)
+func processURL(url string) {
+	doc := downloadURL(url)
+	if strings.Contains(url, "/orgs/") {
+		fmt.Println("Scraping organization: " + url)
+		scrapeOrganization(doc, url)
+	} else if strings.Contains(url, "/search?") {
+		fmt.Println("Scraping search results: " + url)
+		scrapeSearch(doc, url)
+	} else if strings.Contains(url, "/stargazers") {
+		fmt.Println("Scraping stargazers: " + url)
+		scrapeStarGazers(doc, url)
 	} else {
-		fmt.Println("Single profile URL. Beginning to scrape.")
+		fmt.Println("Scraping Github profile: " + url)
 		scrapeProfile(doc)
 	}
+	fmt.Println("====================")
 }

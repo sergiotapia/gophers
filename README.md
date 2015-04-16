@@ -4,26 +4,34 @@ organization or search results collection.
 
 ## Installation
 
-Installation instructions to come. Most likely you just download the executable
-for your platform and invoke it in the terminal. Coming soon!
+No installation necessary, just download the executable and run it. Or clone
+this repo and build it yourself. It's all open source.
 
 ## Usage
 
 You can download the executable `gophers` and run it in your terminal.
 
 ```
-// Scrape an entire Github organization
-$ ./gophers -github_url='https://github.com/orgs/rails/people'
-
-// Scrape the Stargazers for a repository
-$ ./gophers -github_url='https://github.com/thoughtbot/paperclip/stargazers'
-
-// Scrape a single user profile
-$ ./gophers -github_url='https://github.com/sergiotapia'
-
-// Scrape the results of a Github search
-$ ./gophers -github_url='https://github.com/search?utf8=%E2%9C%93&q=location%3A%22San+Fransisco%22+location%3ACA+followers%3A%3E100&type=Users&ref=advsearch&l='
+$ ./gophers
 ```
+
+Gophers will look for a file called `urls.txt` and pull each URL to parse in
+sequential order.
+
+Here's an example:
+
+```
+https://github.com/orgs/rails/people
+https://github.com/orgs/php/people
+https://github.com/thoughtbot/paperclip/stargazers
+https://github.com/sergiotapia
+https://github.com/yonasb
+https://github.com/search?utf8=%E2%9C%93&q=location%3A%22San+Fransisco%22+location%3ACA+followers%3A%3E100&type=Users&ref=advsearch&l='
+https://github.com/danieltapia
+```
+
+Gopher will know how to process each URL and output whatever users it finds into
+`output.csv`.
 
 ## License
 

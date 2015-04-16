@@ -16,6 +16,7 @@ func scrapeSearch(document *goquery.Document, url string) {
 	page := 1
 	for page <= pages {
 		pageURL := url + "&p=" + strconv.Itoa(page)
+		fmt.Println("Analyzing page: " + pageURL)
 		doc := downloadURL(pageURL)
 		doc.Find(".user-list-item").Each(func(i int, s *goquery.Selection) {
 			email := s.Find("a.email").Text()

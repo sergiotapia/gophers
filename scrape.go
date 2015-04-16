@@ -111,6 +111,6 @@ func downloadURL(url string) *goquery.Document {
 	if err != nil {
 		log.Fatal(err)
 	}
-	time.Sleep(1 * time.Second)
+	time.Sleep(5 * time.Second)
 	return doc
 }
